@@ -1,1 +1,1 @@
-pip install sqlalchemy psycopg2-binary python-dotenv
+
