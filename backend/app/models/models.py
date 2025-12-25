@@ -24,7 +24,7 @@ class Users(Base):
     
     
 class Journal(Base):
-    __tablename__ = "journals"
+    __tablename__ = "journal"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id : Mapped[int] = mapped_column(ForeignKey("users.id"))
