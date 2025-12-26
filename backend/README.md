@@ -20,10 +20,7 @@ backend/
 │   │   ├── base.py               # SQLAlchemy Base
 │   │   ├── session.py            # DB session
 │   │   ├── init_db.py
-│   │
-│   ├── models/
-│   │   ├── user.py               # DB models
-│   │   ├── journal.py
+│   │   ├── models.py
 │   │
 │   ├── schemas/
 │   │   ├── user.py               # Pydantic schemas
