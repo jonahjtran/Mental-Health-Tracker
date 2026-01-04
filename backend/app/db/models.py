@@ -2,7 +2,7 @@ from typing import List, Optional
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import date, datetime
-from base import Base
+from .base import Base
 
 
 
@@ -23,7 +23,7 @@ class Journal(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id : Mapped[int] = mapped_column(ForeignKey("users.id"))
-    date: Mapped[datetime.date]
+    date: Mapped[date]
     mood_rating: Mapped[int]
     entry : Mapped[str]
 
