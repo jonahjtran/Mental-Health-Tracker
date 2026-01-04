@@ -1,4 +1,3 @@
-from backend.app.db import models
 from pydantic import BaseModel
 from datetime import date
 
