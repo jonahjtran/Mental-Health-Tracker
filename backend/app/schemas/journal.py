@@ -3,7 +3,6 @@ from datetime import date
 
 
 class JournalCreate(BaseModel):
-    user_id: int
     date: date
     mood_rating: int
     entry: str
