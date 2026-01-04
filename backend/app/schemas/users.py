@@ -29,3 +29,21 @@ class UserUpdate(BaseModel):
 
     class Config:
         from_attributes = True
+
+class UserDelete(BaseModel):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+class GetUserByEmail(BaseModel):
+    email: str
+
+    class Config:
+        from_attributes = True
+
+class GetUserById(BaseModel):
+    id: int
+
+    class Config:
+        from_attributes = True
