@@ -1,9 +1,31 @@
 from sqlalchemy import null
 from backend.app.db import models
 from pydantic import BaseModel
+from typing import List, Optional
+from app.schemas.journal import JournalRead
+
 
 class CreateUser(BaseModel):
     name: str
     email: str
-    journal_entries: null
+    journal_entries: List[JournalRead]
 
+    class Config:
+        from_attributes = True
+
+class UserRead(BaseModel):
+    id: int
+    name: str
+    email: str
+    journal_entries: List[JournalRead]
+
+    class Config:
+        from_attributes = True
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    journal_entries: Optional[List[JournalRead]] = None
+
+    class Config:
+        from_attributes = True
