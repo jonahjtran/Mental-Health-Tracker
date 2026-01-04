@@ -1,6 +1,19 @@
 from backend.app.db import models
+from pydantic import BaseModel
+from datetime import date
 
-def verify_mood(rating : int): 
-    if (rating < 0 or rating > 5):
-        return "Error: invalid mood rating"
-    
+
+class JournalCreate(BaseModel):
+    user_id: int
+    date: date
+    mood_rating: int
+    entry: str
+
+class JournalRead(BaseModel):
+    id: int
+    date: date
+    mood_rating: int
+    entry: str
+
+    class Config:
+        from_attributes = True
