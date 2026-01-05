@@ -54,6 +54,14 @@ def list_journal_entries(db: Session, user_id: int, *, date: date = None, mood_r
     else:
         return get_journals_by_user(db, user_id)
 
+def get_journal_entry(db: Session, user_id: int, journal_id: int):
+    if get_journal_by_id(db, journal_id) is None:
+        return False, "Journal does not exist"
+    elif get_journal_by_id(db, journal_id).user_id != user_id:
+        return False, "Journal does not match user"
+
+    return get_journal_by_id(db, journal_id)
+
 
 
 
