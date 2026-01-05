@@ -40,6 +40,15 @@ def update_journal(db: Session, journal_id: int, journal_data: JournalCreate):
 
 def get_journal_by_id(db: Session, journal_id: int):
     return db.query(Journal).filter(journal_id == journal_id).first()
+
+def get_journals_by_date(db: Session, user_id: int, date: date):
+    return db.query(Journal).filter(Journal.user_id == user_id, Journal.date == date).all()
+
+def get_journals_by_mood_rating(db: Session, user_id: int, mood_rating: int):
+    return db.query(Journal).filter(Journal.user_id == user_id, Journal.mood_rating == mood_rating).all()
+
+def get_journals_by_mood_rating_and_date(db: Session, user_id: int, mood_rating: int, date: date):
+    return db.query(Journal).filter(Journal.user_id == user_id, Journal.mood_rating == mood_rating, Journal.date == date).all()
     
 
 
