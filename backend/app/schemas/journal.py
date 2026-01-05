@@ -4,9 +4,9 @@ from pydantic import Field
 from typing import Optional
 
 class JournalCreate(BaseModel):
-        date: date = Field(default=date.today())
-        mood_rating: int = 
-        entry: str
+    date: date = Field(default=date.today())
+    mood_rating: Optional[int] = Field(..., ge=1, le=5)
+    entry: str
 
 class JournalRead(BaseModel):
     id: int
