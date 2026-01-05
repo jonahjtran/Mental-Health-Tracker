@@ -5,7 +5,7 @@ from schemas.journal import JournalCreate, JournalRead
 
 def create_journal(db: Session, user_id: int, journal_data):
     journal = Journal(
-        user_id =journal_data,
+        user_id = user_id,
         date = journal_data.date,
         mood_rating = journal_data.mood_rating,
         entry = journal_data.entry

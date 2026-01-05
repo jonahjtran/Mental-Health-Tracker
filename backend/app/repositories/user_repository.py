@@ -17,6 +17,11 @@ def create_user(db: Session, user_data: CreateUser):
     db.refresh(user)
     return user
 
+def user_exists(db: Session, user_id: int):
+    if db.query(Users).filter(Users.id == user_id).first() is not None:
+        return True
+    return False
+
 def get_user_by_email(db: Session, email: str):
     return db.query(Users).filter(Users.email == email).first()
 
@@ -44,3 +49,4 @@ def get_user_by_journal_entries(db: Session, journal_entries: List[JournalRead])
 
 def get_user_by_journal_entry_id(db: Session, journal_entry_id: int):
     return db.query(Users).filter(Users.journal_entries.any(Journal.id == journal_entry_id)).first()
+
