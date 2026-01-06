@@ -29,8 +29,10 @@ def get_user_by_id(db: Session, user_id: int):
     return db.query(Users).filter(Users.id == user_id).first()
 
 def update_user(db: Session, user_id: int, user_data: UserUpdate):
-    db.query(Users).filter(Users.id == user_id).update(user_data.model_dump())
+    print("inside update user function")
+    db.query(Users).filter(Users.id == user_id).update(user_data.model_dump(exclude={"journal_entries"}))
     db.commit()
+    print("committed update user function")
     return True
 
 def delete_user(db: Session, user_id: int):
