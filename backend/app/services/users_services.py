@@ -19,6 +19,13 @@ def get_user_by_email(db: Session, email: str):
         return False, "User does not exist"
     else:
         return user
+
+def get_user_by_id(db: Session, user_id: int):
+    user = user_repository.get_user_by_id(db, user_id)
+    if user is None:
+        return False, "User does not exist"
+    else:
+        return user
     
 def update_user(db: Session, user_id: int, user_data: UserUpdate):
     if user_repository.get_user_by_id(db, user_id) is None:
