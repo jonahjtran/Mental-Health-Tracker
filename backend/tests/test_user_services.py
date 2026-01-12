@@ -57,8 +57,7 @@ def test_create_user_rejects_missing_fields(db_session: Session) -> None:
 
     result = users_services.create_user(db_session, payload)
 
-    assert result[0] is False
-    assert "required" in result[1]
+    assert result is False
 
 
 def test_create_user_rejects_duplicate_email(db_session: Session) -> None:
@@ -67,8 +66,7 @@ def test_create_user_rejects_duplicate_email(db_session: Session) -> None:
     duplicate = CreateUser(name="Jane Two", email="jane@example.com", journal_entries=[])
     result = users_services.create_user(db_session, duplicate)
 
-    assert result[0] is False
-    assert "already exists" in result[1]
+    assert result is False
 
 
 def test_get_user_by_email_returns_user(db_session: Session) -> None:
@@ -83,8 +81,7 @@ def test_get_user_by_email_returns_user(db_session: Session) -> None:
 def test_get_user_by_email_missing_returns_false(db_session: Session) -> None:
     result = users_services.get_user_by_email(db_session, "missing@example.com")
 
-    assert result[0] is False
-    assert "does not exist" in result[1]
+    assert result is False
 
 
 def test_update_user_success_and_missing(db_session: Session) -> None:
@@ -97,10 +94,10 @@ def test_update_user_success_and_missing(db_session: Session) -> None:
         db_session, user.id + 1, UserUpdate(name="No One")
     )
 
-    assert success[0] is True
-    assert "Successfully" in success[1]
-    assert missing[0] is False
-    assert "does not exist" in missing[1]
+    assert success is not False
+    assert success.name == "Liam Updated"
+    assert success.email == "liam2@example.com"
+    assert missing is False
 
 
 def test_delete_user_success_and_missing(db_session: Session) -> None:
@@ -109,9 +106,9 @@ def test_delete_user_success_and_missing(db_session: Session) -> None:
     success = users_services.delete_user(db_session, user.id)
     missing = users_services.delete_user(db_session, user.id + 1)
 
-    assert success[0] is True
-    assert "Successfully" in success[1]
-    assert missing[0] is False
+    assert success is not False
+    assert success.id == user.id
+    assert missing is False
 
 
 def test_get_all_users_returns_list(db_session: Session) -> None:
@@ -131,7 +128,7 @@ def test_get_user_by_name_success_and_missing(db_session: Session) -> None:
 
     assert found is not False
     assert found.id == user.id
-    assert missing[0] is False
+    assert missing is False
 
 
 def test_get_user_by_journal_entry_id(db_session: Session) -> None:
@@ -158,4 +155,4 @@ def test_user_exists_success_and_missing(db_session: Session) -> None:
     missing = users_services.user_exists(db_session, user.id + 1)
 
     assert exists is True
-    assert missing[0] is False
+    assert missing is False
