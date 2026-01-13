@@ -36,9 +36,15 @@ def test_journal_read_rejects_out_of_range_mood_rating(rating: int) -> None:
         )
 
 
-def test_journal_update_requires_mood_rating() -> None:
+def test_journal_update_allows_partial_updates() -> None:
+    payload = JournalUpdate(entry="Only updating entry.")
+
+    assert payload.entry == "Only updating entry."
+
+
+def test_journal_create_requires_mood_rating() -> None:
     with pytest.raises(ValidationError):
-        JournalUpdate(entry="Only updating entry.")
+        JournalCreate(entry="Missing rating.")
 
 
 def test_create_user_accepts_empty_journal_entries() -> None:

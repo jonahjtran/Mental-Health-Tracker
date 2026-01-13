@@ -5,7 +5,7 @@ from typing import Optional
 
 class JournalCreate(BaseModel):
     date: Optional[dt_date] = Field(default_factory=dt_date.today)
-    mood_rating: Optional[int] = Field(..., ge=1, le=5)
+    mood_rating: int = Field(..., ge=1, le=5)
     entry: str
 
 class JournalRead(BaseModel):
@@ -19,7 +19,7 @@ class JournalRead(BaseModel):
 
 class JournalUpdate(BaseModel):
     date: Optional[dt_date] = None
-    mood_rating: Optional[int] = Field(..., ge=1, le=5)
+    mood_rating: Optional[int] = Field(None, ge=1, le=5)
     entry: Optional[str] = None
 
     class Config:

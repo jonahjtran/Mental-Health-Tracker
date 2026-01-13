@@ -26,7 +26,7 @@ from backend.app.repositories.journal_repository import (
     get_journals_by_user,
     update_journal,
 )
-from backend.app.schemas.journal import JournalCreate
+from backend.app.schemas.journal import JournalCreate, JournalUpdate
 
 
 @pytest.fixture()
@@ -119,16 +119,15 @@ def test_update_journal_persists_changes(db_session: Session) -> None:
         JournalCreate(date=date(2024, 5, 1), mood_rating=1, entry="Tough start."),
     )
 
-    update_journal(
+    updated = update_journal(
         db_session,
         journal.id,
-        JournalCreate(date=date(2024, 5, 2), mood_rating=4, entry="Improved."),
+        JournalUpdate(date=date(2024, 5, 2), mood_rating=4, entry="Improved."),
     )
 
-    refreshed = get_journal_by_id(db_session, journal.id)
-    assert refreshed is not None
-    assert refreshed.mood_rating == 4
-    assert refreshed.entry == "Improved."
+    assert updated is not None
+    assert updated.mood_rating == 4
+    assert updated.entry == "Improved."
 
 
 def test_delete_journal_removes_entry(db_session: Session) -> None:

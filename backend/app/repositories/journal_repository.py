@@ -1,7 +1,7 @@
 from datetime import date
 from sqlalchemy.orm import Session
 from db.models import Journal
-from schemas.journal import JournalCreate, JournalRead
+from schemas.journal import JournalCreate, JournalRead, JournalUpdate
 
 def create_journal(db: Session, user_id: int, journal_data):
     journal = Journal(
@@ -33,10 +33,12 @@ def delete_journal(db: Session, journal_id: int):
 def get_journals_by_mood_rating(db: Session, mood_rating: int, user_id: int):
     return db.query(Journal).filter(Journal.user_id == user_id, Journal.mood_rating == mood_rating).all()
 
-def update_journal(db: Session, journal_id: int, journal_data: JournalCreate):
-    db.query(Journal).filter(Journal.id == journal_id).update(journal_data.model_dump())
+def update_journal(db: Session, journal_id: int, journal_data: JournalUpdate):
+    update_data = journal_data.model_dump(exclude_unset=True)
+    if update_data:
+        db.query(Journal).filter(Journal.id == journal_id).update(update_data)
     db.commit()
-    return True
+    return get_journal_by_id(db, journal_id)
 
 def get_journal_by_id(db: Session, journal_id: int):
     return db.query(Journal).filter(Journal.id == journal_id).first()
@@ -50,4 +52,3 @@ def get_journals_by_mood_rating(db: Session, user_id: int, mood_rating: int):
 def get_journals_by_mood_rating_and_date(db: Session, user_id: int, mood_rating: int, date: date):
     return db.query(Journal).filter(Journal.user_id == user_id, Journal.mood_rating == mood_rating, Journal.date == date).all()
     
-
