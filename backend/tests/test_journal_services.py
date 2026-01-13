@@ -23,6 +23,7 @@ from backend.app.services.journal_services import (
     list_journal_entries,
     update_journal_entry,
 )
+from backend.app.services.errors import NotFoundError
 from backend.app.schemas.journal import JournalCreate, JournalUpdate
 
 
@@ -65,10 +66,10 @@ def test_create_journal_entry_persists_row(db_session: Session) -> None:
     assert len(stored) == 1
     assert stored[0].entry == "Feeling good."
 
-def test_delete_journal_entry_missing_returns_none(db_session: Session) -> None:
-    result = delete_journal_entry(db_session, 999)
-
-    assert result is None
+def test_delete_journal_entry_missing_raises(db_session: Session) -> None:
+    user = _create_user(db_session, "Nia", "nia@example.com")
+    with pytest.raises(NotFoundError):
+        delete_journal_entry(db_session, user.id, 999)
 
 
 def test_delete_journal_entry_removes_row(db_session: Session) -> None:
@@ -82,7 +83,7 @@ def test_delete_journal_entry_removes_row(db_session: Session) -> None:
     db_session.add(journal)
     db_session.commit()
 
-    result = delete_journal_entry(db_session, journal.id)
+    result = delete_journal_entry(db_session, user.id, journal.id)
 
     assert result is not None
     assert result.id == journal.id
@@ -102,19 +103,19 @@ def test_update_journal_entry_updates_row(db_session: Session) -> None:
     db_session.commit()
 
     payload = JournalUpdate(entry="After.", mood_rating=5)
-    result = update_journal_entry(db_session, journal.id, payload)
+    result = update_journal_entry(db_session, user.id, journal.id, payload)
 
     assert result is not None
     assert result.entry == "After."
     assert result.mood_rating == 5
 
 
-def test_update_journal_entry_missing_returns_none(db_session: Session) -> None:
+def test_update_journal_entry_missing_raises(db_session: Session) -> None:
+    user = _create_user(db_session, "Ola", "ola@example.com")
     payload = JournalUpdate(entry="Nope.")
 
-    result = update_journal_entry(db_session, 999, payload)
-
-    assert result is None
+    with pytest.raises(NotFoundError):
+        update_journal_entry(db_session, user.id, 999, payload)
 
 
 def test_get_journal_by_id_enforces_user(db_session: Session) -> None:
@@ -130,10 +131,10 @@ def test_get_journal_by_id_enforces_user(db_session: Session) -> None:
     db_session.commit()
 
     assert get_journal_by_id(db_session, user.id, journal.id) is not None
-    assert get_journal_by_id(db_session, other.id, journal.id) is None
+    with pytest.raises(NotFoundError):
+        get_journal_by_id(db_session, other.id, journal.id)
 
 
-def test_list_journal_entries_missing_user_returns_false(db_session: Session) -> None:
-    result = list_journal_entries(db_session, 999)
-
-    assert result[0] is False
+def test_list_journal_entries_missing_user_raises(db_session: Session) -> None:
+    with pytest.raises(NotFoundError):
+        list_journal_entries(db_session, 999)

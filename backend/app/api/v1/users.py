@@ -1,9 +1,10 @@
 import fastapi
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Query, Path, status
 from sqlalchemy.orm import Session
-from app.db.session import get_db
-from app.schemas.users import CreateUser, UserUpdate, UserRead
-from app.services.users_services import (
+from backend.app.db.session import get_db
+from backend.app.schemas.users import CreateUser, UserUpdate, UserRead
+from backend.app.services.errors import ConflictError, NotFoundError
+from backend.app.services.users_services import (
     create_user,
     get_user_by_id,
     get_user_by_name,
@@ -14,62 +15,70 @@ from app.services.users_services import (
 
 router = fastapi.APIRouter()
 
-@router.post("/users", response_model=UserRead)
+@router.post("/users", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 def create_user_endpoint(user_data: CreateUser, db: Session = Depends(get_db)):
-    user = create_user(db, user_data)
-    if user is False:
+    try:
+        return create_user(db, user_data)
+    except ConflictError as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid user data or user already exists.",
-        )
-    return user
+            status_code=status.HTTP_409_CONFLICT,
+            detail=exc.message,
+        ) from exc
 
 @router.get("/users/{user_id}", response_model=UserRead)
-def get_user_by_id_endpoint(user_id: int, db: Session = Depends(get_db)):
-    user = get_user_by_id(db, user_id)
-    if user is False:
+def get_user_by_id_endpoint(
+    user_id: int = Path(..., ge=1), db: Session = Depends(get_db)
+):
+    try:
+        return get_user_by_id(db, user_id)
+    except NotFoundError as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found.",
-        )
-    return user
+            detail=exc.message,
+        ) from exc
 
 @router.delete("/users/{user_id}", response_model=UserRead)
-def delete_user_endpoint(user_id: int, db: Session = Depends(get_db)):
-    user = delete_user(db, user_id)
-    if user is False:
+def delete_user_endpoint(
+    user_id: int = Path(..., ge=1), db: Session = Depends(get_db)
+):
+    try:
+        return delete_user(db, user_id)
+    except NotFoundError as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found.",
-        )
-    return user
+            detail=exc.message,
+        ) from exc
 
-@router.put("/users/{user_id}", response_model=UserRead)
-def update_user_endpoint(user_id: int, user_data: UserUpdate, db: Session = Depends(get_db)):
-    user = update_user(db, user_id, user_data)
-    if user is False:
+@router.patch("/users/{user_id}", response_model=UserRead)
+def update_user_endpoint(
+    user_id: int = Path(..., ge=1),
+    user_data: UserUpdate = ...,
+    db: Session = Depends(get_db),
+):
+    try:
+        return update_user(db, user_id, user_data)
+    except NotFoundError as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found.",
-        )
-    return user
+            detail=exc.message,
+        ) from exc
 
 @router.get("/users/name/{name}", response_model=UserRead)
 def get_user_by_name_endpoint(name: str, db: Session = Depends(get_db)):
-    user = get_user_by_name(db, name)
-    if user is False:
+    try:
+        return get_user_by_name(db, name)
+    except NotFoundError as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found.",
-        )
-    return user
+            detail=exc.message,
+        ) from exc
 
-@router.get("/users/email/{email}", response_model=UserRead)
-def get_user_by_email_endpoint(email: str, db: Session = Depends(get_db)):
-    user = get_user_by_email(db, email)
-    if user is False:
+@router.get("/users/by-email", response_model=UserRead)
+def get_user_by_email_endpoint(email: str = Query(...), db: Session = Depends(get_db)):
+    try:
+        return get_user_by_email(db, email)
+    except NotFoundError as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found.",
-        )
-    return user
+            detail=exc.message,
+        ) from exc

@@ -5,6 +5,7 @@ from typing import Optional
 
 import pytest
 from sqlalchemy import create_engine
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, sessionmaker
 
 
@@ -19,6 +20,7 @@ from backend.app.db.base import Base
 from backend.app.db import models
 from backend.app.schemas.users import CreateUser, UserUpdate
 from backend.app.services import users_services
+from backend.app.services.errors import ConflictError, NotFoundError
 
 
 class UserPayload:
@@ -55,18 +57,16 @@ def _create_user(db_session: Session, name: str, email: str) -> models.Users:
 def test_create_user_rejects_missing_fields(db_session: Session) -> None:
     payload = UserPayload(name=None, email=None)
 
-    result = users_services.create_user(db_session, payload)
-
-    assert result is False
+    with pytest.raises(IntegrityError):
+        users_services.create_user(db_session, payload)
 
 
 def test_create_user_rejects_duplicate_email(db_session: Session) -> None:
     _create_user(db_session, "Jane", "jane@example.com")
 
     duplicate = CreateUser(name="Jane Two", email="jane@example.com", journal_entries=[])
-    result = users_services.create_user(db_session, duplicate)
-
-    assert result is False
+    with pytest.raises(ConflictError):
+        users_services.create_user(db_session, duplicate)
 
 
 def test_get_user_by_email_returns_user(db_session: Session) -> None:
@@ -79,9 +79,8 @@ def test_get_user_by_email_returns_user(db_session: Session) -> None:
 
 
 def test_get_user_by_email_missing_returns_false(db_session: Session) -> None:
-    result = users_services.get_user_by_email(db_session, "missing@example.com")
-
-    assert result is False
+    with pytest.raises(NotFoundError):
+        users_services.get_user_by_email(db_session, "missing@example.com")
 
 
 def test_update_user_success_and_missing(db_session: Session) -> None:
@@ -90,25 +89,23 @@ def test_update_user_success_and_missing(db_session: Session) -> None:
     success = users_services.update_user(
         db_session, user.id, UserUpdate(name="Liam Updated", email="liam2@example.com")
     )
-    missing = users_services.update_user(
-        db_session, user.id + 1, UserUpdate(name="No One")
-    )
+    with pytest.raises(NotFoundError):
+        users_services.update_user(db_session, user.id + 1, UserUpdate(name="No One"))
 
     assert success is not False
     assert success.name == "Liam Updated"
     assert success.email == "liam2@example.com"
-    assert missing is False
 
 
 def test_delete_user_success_and_missing(db_session: Session) -> None:
     user = _create_user(db_session, "Mia", "mia@example.com")
 
     success = users_services.delete_user(db_session, user.id)
-    missing = users_services.delete_user(db_session, user.id + 1)
+    with pytest.raises(NotFoundError):
+        users_services.delete_user(db_session, user.id + 1)
 
     assert success is not False
     assert success.id == user.id
-    assert missing is False
 
 
 def test_get_all_users_returns_list(db_session: Session) -> None:
@@ -124,11 +121,11 @@ def test_get_user_by_name_success_and_missing(db_session: Session) -> None:
     user = _create_user(db_session, "Pax", "pax@example.com")
 
     found = users_services.get_user_by_name(db_session, "Pax")
-    missing = users_services.get_user_by_name(db_session, "Missing")
+    with pytest.raises(NotFoundError):
+        users_services.get_user_by_name(db_session, "Missing")
 
     assert found is not False
     assert found.id == user.id
-    assert missing is False
 
 
 def test_get_user_by_journal_entry_id(db_session: Session) -> None:

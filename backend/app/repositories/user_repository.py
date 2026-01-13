@@ -1,9 +1,8 @@
 from sqlalchemy.orm import Session
-from db.models import Users
-from schemas.users import CreateUser, UserRead, UserUpdate, UserDelete
-from schemas.journal import JournalRead
+from backend.app.db.models import Users, Journal
+from backend.app.schemas.users import CreateUser, UserRead, UserUpdate, UserDelete
+from backend.app.schemas.journal import JournalRead
 from typing import List
-from db.models import Journal
 
 def create_user(db: Session, user_data: CreateUser):
     user = Users(
@@ -51,4 +50,3 @@ def get_user_by_journal_entries(db: Session, journal_entries: List[JournalRead])
 
 def get_user_by_journal_entry_id(db: Session, journal_entry_id: int):
     return db.query(Users).filter(Users.journal_entries.any(Journal.id == journal_entry_id)).first()
-

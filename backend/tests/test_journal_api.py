@@ -23,10 +23,10 @@ if "app.core.config" not in sys.modules:
     config_module.settings = types.SimpleNamespace(database_url="sqlite+pysqlite:///:memory:")
     sys.modules["app.core.config"] = config_module
 
-from backend.app.api.v1 import journals as journals_router
-from backend.app.db.base import Base
-from backend.app.db import models
-from backend.app.db.session import get_db
+from app.api.v1 import journals as journals_router
+from app.db.base import Base
+from app.db import models
+from app.db.session import get_db
 
 
 @pytest.fixture()
@@ -102,7 +102,7 @@ def test_create_journal_endpoint_persists(client: TestClient, db_session: Sessio
     user = _create_user(db_session, "Rita", "rita@example.com")
     payload = {"date": "2024-07-01", "mood_rating": 4, "entry": "Feeling good."}
 
-    response = client.post(f"/journals/create/{user.id}", json=payload)
+    response = client.post(f"/users/{user.id}/journals", json=payload)
 
     assert response.status_code == 201
     body = response.json()
@@ -117,10 +117,10 @@ def test_get_journal_by_id_requires_matching_user(client: TestClient, db_session
     other = _create_user(db_session, "Tia", "tia@example.com")
     journal = _create_journal(db_session, user.id, entry="Scoped.", mood_rating=3)
 
-    ok = client.get(f"/journals/id/{journal.id}", params={"user_id": user.id})
+    ok = client.get(f"/users/{user.id}/journals/{journal.id}")
     assert ok.status_code == 200
 
-    forbidden = client.get(f"/journals/id/{journal.id}", params={"user_id": other.id})
+    forbidden = client.get(f"/users/{other.id}/journals/{journal.id}")
     assert forbidden.status_code == 404
 
 
@@ -128,7 +128,7 @@ def test_get_journal_by_date_returns_entries(client: TestClient, db_session: Ses
     user = _create_user(db_session, "Uma", "uma@example.com")
     _create_journal(db_session, user.id, entry="Day one.", mood_rating=2)
 
-    response = client.get("/journals/date/2024-07-01", params={"user_id": user.id})
+    response = client.get(f"/users/{user.id}/journals", params={"date": "2024-07-01"})
 
     assert response.status_code == 200
     body = response.json()
@@ -139,7 +139,7 @@ def test_get_journal_by_date_returns_entries(client: TestClient, db_session: Ses
 def test_get_journal_by_mood_rating_validates_range(client: TestClient, db_session: Session) -> None:
     user = _create_user(db_session, "Vic", "vic@example.com")
 
-    response = client.get("/journals/mood/0", params={"user_id": user.id})
+    response = client.get(f"/users/{user.id}/journals", params={"mood_rating": 0})
 
     assert response.status_code == 422
 
@@ -149,7 +149,7 @@ def test_update_journal_endpoint_updates_row(client: TestClient, db_session: Ses
     journal = _create_journal(db_session, user.id, entry="Before.", mood_rating=2)
     payload = {"entry": "After."}
 
-    response = client.put(f"/journals/update/{journal.id}", json=payload)
+    response = client.patch(f"/users/{user.id}/journals/{journal.id}", json=payload)
 
     assert response.status_code == 200
     body = response.json()
@@ -162,10 +162,11 @@ def test_update_journal_endpoint_updates_row(client: TestClient, db_session: Ses
 def test_delete_journal_endpoint_removes_row(client: TestClient, db_session: Session) -> None:
     user = _create_user(db_session, "Zoe", "zoe@example.com")
     journal = _create_journal(db_session, user.id, entry="Gone.", mood_rating=5)
+    journal_id = journal.id
 
-    response = client.delete(f"/journals/delete/{journal.id}")
+    response = client.delete(f"/users/{user.id}/journals/{journal_id}")
 
     assert response.status_code == 200
     db_session.expire_all()
-    stored = db_session.get(models.Journal, journal.id)
+    stored = db_session.get(models.Journal, journal_id)
     assert stored is None
