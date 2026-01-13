@@ -23,10 +23,10 @@ if "app.core.config" not in sys.modules:
     config_module.settings = types.SimpleNamespace(database_url="sqlite+pysqlite:///:memory:")
     sys.modules["app.core.config"] = config_module
 
-from app.api.v1 import journals as journals_router
-from app.db.base import Base
-from app.db import models
-from app.db.session import get_db
+from backend.app.api.v1 import journals as journals_router
+from backend.app.db.base import Base
+from backend.app.db import models
+from backend.app.db.session import get_db
 
 
 @pytest.fixture()
