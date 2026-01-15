@@ -12,6 +12,7 @@ from backend.app.services.users_services import (
     update_user,
     delete_user,
 )
+from backend.app.core.security import get_current_user
 
 router = fastapi.APIRouter()
 
@@ -37,12 +38,29 @@ def get_user_by_id_endpoint(
             detail=exc.message,
         ) from exc
 
+@router.get("/me", response_model=UserRead)
+def get_me_endpoint(current_user = Depends(get_current_user)):
+    return current_user
+
 @router.delete("/users/{user_id}", response_model=UserRead)
 def delete_user_endpoint(
     user_id: int = Path(..., ge=1), db: Session = Depends(get_db)
 ):
     try:
         return delete_user(db, user_id)
+    except NotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=exc.message,
+        ) from exc
+
+@router.delete("/me", response_model=UserRead)
+def delete_me_endpoint(
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    try:
+        return delete_user(db, current_user.id)
     except NotFoundError as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -57,6 +75,20 @@ def update_user_endpoint(
 ):
     try:
         return update_user(db, user_id, user_data)
+    except NotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=exc.message,
+        ) from exc
+
+@router.patch("/me", response_model=UserRead)
+def update_me_endpoint(
+    user_data: UserUpdate = ...,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    try:
+        return update_user(db, current_user.id, user_data)
     except NotFoundError as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
