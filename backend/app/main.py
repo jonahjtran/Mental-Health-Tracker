@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from app.api.v1 import auth
+from backend.app.api.v1 import auth
 
 from starlette.middleware.sessions import SessionMiddleware
-from app.core.config import settings
+from backend.app.core.config import settings
 
 app = FastAPI()
 

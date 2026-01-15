@@ -1,7 +1,7 @@
-from app.repositories import user_repository
-from app.schemas.users import CreateUser, UserUpdate
-from app.schemas.journal import JournalRead
-from app.services.errors import ConflictError, NotFoundError
+from backend.app.repositories import user_repository
+from backend.app.schemas.users import CreateUser, UserUpdate
+from backend.app.schemas.journal import JournalRead
+from backend.app.services.errors import ConflictError, NotFoundError
 from sqlalchemy.orm import Session
 from typing import List, Optional
 

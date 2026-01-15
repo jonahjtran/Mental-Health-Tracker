@@ -5,9 +5,9 @@ import jwt
 from fastapi import Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 
-from app.core.config import settings
-from app.db.session import get_db
-from app.repositories import user_repository
+from backend.app.core.config import settings
+from backend.app.db.session import get_db
+from backend.app.repositories import user_repository
 
 def create_access_token(user_id: int) -> str:
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=settings.jwt_expiration_minutes)

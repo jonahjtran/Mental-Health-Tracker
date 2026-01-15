@@ -1,10 +1,10 @@
 import fastapi
 from fastapi import Depends, HTTPException, Query, Path, status
 from sqlalchemy.orm import Session
-from app.db.session import get_db
-from app.schemas.users import CreateUser, UserUpdate, UserRead
-from app.services.errors import ConflictError, NotFoundError
-from app.services.users_services import (
+from backend.app.db.session import get_db
+from backend.app.schemas.users import CreateUser, UserUpdate, UserRead
+from backend.app.services.errors import ConflictError, NotFoundError
+from backend.app.services.users_services import (
     create_user,
     get_user_by_id,
     get_user_by_name,
@@ -12,7 +12,7 @@ from app.services.users_services import (
     update_user,
     delete_user,
 )
-from app.core.security import get_current_user
+from backend.app.core.security import get_current_user
 
 router = fastapi.APIRouter()
 

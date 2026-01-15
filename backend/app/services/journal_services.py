@@ -1,5 +1,5 @@
-from app.repositories.user_repository import user_exists
-from app.repositories.journal_repository import (
+from backend.app.repositories.user_repository import user_exists
+from backend.app.repositories.journal_repository import (
     create_journal as repo_create_journal,
     delete_journal as repo_delete_journal,
     get_journal_by_id as repo_get_journal_by_id,
@@ -9,8 +9,8 @@ from app.repositories.journal_repository import (
     get_journals_by_user as repo_get_journals_by_user,
     update_journal as repo_update_journal,
 )
-from app.schemas.journal import JournalCreate, JournalRead, JournalUpdate
-from app.services.errors import NotFoundError
+from backend.app.schemas.journal import JournalCreate, JournalRead, JournalUpdate
+from backend.app.services.errors import NotFoundError
 
 from sqlalchemy.orm import Session
 from datetime import date

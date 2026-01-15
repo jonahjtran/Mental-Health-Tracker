@@ -31,6 +31,19 @@ if "app.core.config" not in sys.modules:
     )
     sys.modules["app.core.config"] = config_module
 
+if "backend.app.core.config" not in sys.modules:
+    config_module = types.ModuleType("backend.app.core.config")
+    config_module.settings = types.SimpleNamespace(
+        database_url="sqlite+pysqlite:///:memory:",
+        jwt_secret="test-jwt-secret",
+        jwt_expiration_minutes=60,
+        google_client_id="test-client-id",
+        google_client_secret="test-client-secret",
+        google_redirect_uri="http://localhost:8000/api/v1/auth/callback/google",
+        frontend_url="http://frontend.test",
+    )
+    sys.modules["backend.app.core.config"] = config_module
+
 from backend.app.api.v1 import journals as journals_router
 from backend.app.db.base import Base
 from backend.app.db import models

@@ -1,7 +1,7 @@
 from datetime import date
 from sqlalchemy.orm import Session
-from app.db.models import Journal
-from app.schemas.journal import JournalCreate, JournalRead, JournalUpdate
+from backend.app.db.models import Journal
+from backend.app.schemas.journal import JournalCreate, JournalRead, JournalUpdate
 
 def create_journal(db: Session, user_id: int, journal_data):
     journal = Journal(

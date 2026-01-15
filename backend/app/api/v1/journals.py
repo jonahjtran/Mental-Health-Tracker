@@ -1,17 +1,17 @@
 import fastapi
 from fastapi import Depends, HTTPException, Path, Query, status
 from sqlalchemy.orm import Session
-from app.db.session import get_db
-from app.schemas.journal import JournalCreate, JournalRead, JournalUpdate
-from app.services.errors import NotFoundError
-from app.services.journal_services import (
+from backend.app.db.session import get_db
+from backend.app.schemas.journal import JournalCreate, JournalRead, JournalUpdate
+from backend.app.services.errors import NotFoundError
+from backend.app.services.journal_services import (
     create_journal_entry,
     delete_journal_entry,
     get_journal_by_id,
     list_journal_entries,
     update_journal_entry,
 )
-from app.core.security import get_current_user
+from backend.app.core.security import get_current_user
 from typing import List
 from datetime import date
 

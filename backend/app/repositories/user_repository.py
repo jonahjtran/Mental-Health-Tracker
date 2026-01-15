@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from app import db
-from app.db.models import Users, Journal
-from app.schemas.users import CreateUser, UserRead, UserUpdate, UserDelete
-from app.schemas.journal import JournalRead
+from backend.app.db.models import Users, Journal
+from backend.app.schemas.users import CreateUser, UserRead, UserUpdate, UserDelete
+from backend.app.schemas.journal import JournalRead
 from typing import List, Optional
 
 def create_user(db: Session, user_data: CreateUser):
