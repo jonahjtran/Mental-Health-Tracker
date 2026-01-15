@@ -1,0 +1,14 @@
+authlib
+pyjwt
+httpx
+sqlalchemy
+fastapi
+uvicorn
+pytest
+pytest-cov
+pytest-mock
+pytest-asyncio
+pytest-env
+pytest-timeout
+pytest-sugar
+pytest-xdist

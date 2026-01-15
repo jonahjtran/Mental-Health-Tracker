@@ -3,7 +3,8 @@ from backend.app.schemas.users import CreateUser, UserUpdate
 from backend.app.schemas.journal import JournalRead
 from backend.app.services.errors import ConflictError, NotFoundError
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
+
 
 def create_user(db: Session, user_data: CreateUser):
     if user_repository.get_user_by_email(db, user_data.email) is not None:
@@ -58,3 +59,15 @@ def get_user_by_journal_entry_id(db: Session, journal_entry_id: int):
 
 def user_exists(db: Session, user_id: int):
     return user_repository.user_exists(db, user_id)
+
+def get_or_create_user_from_oauth(db: Session, provider: str, subject: str, email: str, name: str, avatar_url: Optional[str] = None):
+    user = user_repository.get_user_by_oauth(db, provider, subject)
+    if user is not None:
+        return user
+    
+    existing = user_repository.get_user_by_email(db, email) is not None:
+    
+    if existing is not None:
+        return user_repository.link_oauth_identity(db, user_id = existing.id, provider = provider, subject = subject, avatar_url=avatar_url)
+    
+    return user_repository.create_oauth_user(db, provider, subject, email, name, avatar_url)
