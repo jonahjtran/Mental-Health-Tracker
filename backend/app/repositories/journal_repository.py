@@ -51,4 +51,7 @@ def get_journals_by_mood_rating(db: Session, user_id: int, mood_rating: int):
 
 def get_journals_by_mood_rating_and_date(db: Session, user_id: int, mood_rating: int, date: date):
     return db.query(Journal).filter(Journal.user_id == user_id, Journal.mood_rating == mood_rating, Journal.date == date).all()
+
+def get_journal_entry(db: Session, journal_id: int, user_id: int):
+    return db.query(Journal).filter(Journal.id == journal_id, Journal.user_id == user_id).first()
     
