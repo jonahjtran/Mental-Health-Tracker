@@ -131,3 +131,14 @@ def test_google_callback_sets_cookie_and_redirects(
     assert response.status_code in {302, 307}
     assert response.headers["location"] == settings.frontend_url
     assert "access_token=app-token" in response.headers.get("set-cookie", "")
+
+
+def test_logout_clears_cookie(client: TestClient) -> None:
+    client.cookies.set("access_token", "token")
+
+    response = client.post("/api/v1/auth/logout")
+
+    assert response.status_code == 204
+    set_cookie = response.headers.get("set-cookie", "")
+    assert "access_token=" in set_cookie
+    assert "Max-Age=0" in set_cookie or "expires=" in set_cookie.lower()

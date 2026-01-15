@@ -28,8 +28,12 @@ def create_user_endpoint(user_data: CreateUser, db: Session = Depends(get_db)):
 
 @router.get("/users/{user_id}", response_model=UserRead)
 def get_user_by_id_endpoint(
-    user_id: int = Path(..., ge=1), db: Session = Depends(get_db)
+    user_id: int = Path(..., ge=1),
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
+    if current_user.id != user_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         return get_user_by_id(db, user_id)
     except NotFoundError as exc:
@@ -44,8 +48,12 @@ def get_me_endpoint(current_user = Depends(get_current_user)):
 
 @router.delete("/users/{user_id}", response_model=UserRead)
 def delete_user_endpoint(
-    user_id: int = Path(..., ge=1), db: Session = Depends(get_db)
+    user_id: int = Path(..., ge=1),
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
+    if current_user.id != user_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         return delete_user(db, user_id)
     except NotFoundError as exc:
@@ -71,8 +79,11 @@ def delete_me_endpoint(
 def update_user_endpoint(
     user_id: int = Path(..., ge=1),
     user_data: UserUpdate = ...,
+    current_user = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    if current_user.id != user_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         return update_user(db, user_id, user_data)
     except NotFoundError as exc:

@@ -1,7 +1,7 @@
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
-from starlette.responses import RedirectResponse
+from starlette.responses import RedirectResponse, Response
 
 from backend.app.core.config import settings
 from backend.app.core.security import create_access_token
@@ -65,4 +65,16 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
         samesite="lax",
         max_age=settings.jwt_expiration_minutes * 60,
     )
+    return response
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+def logout():
+    response = Response(status_code=status.HTTP_204_NO_CONTENT)
+    response.delete_cookie("access_token")
+    return response
+
+@router.get("/logout")
+async def logout(request: Request):
+    response = RedirectResponse(url=settings.frontend_url)
+    response.delete_cookie("access_token")
     return response
