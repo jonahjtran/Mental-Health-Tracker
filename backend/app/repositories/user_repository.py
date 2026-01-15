@@ -52,7 +52,7 @@ def get_user_by_journal_entries(db: Session, journal_entries: List[JournalRead])
 def get_user_by_journal_entry_id(db: Session, journal_entry_id: int):
     return db.query(Users).filter(Users.journal_entries.any(Journal.id == journal_entry_id)).first()
 
-def get_user_by_oath(db: Session, provider: str, subject: str):
+def get_user_by_oauth(db: Session, provider: str, subject: str):
     return db.query(Users).filter(Users.oauth_provider == provider, Users.oauth_subject == subject).first()
 
 def create_oauth_user(db: Session, provider: str, subject: str, email: str, name: str, avatar_url: Optional[str] = None):

@@ -12,9 +12,9 @@ class Users(Base):
     id : Mapped[int] = mapped_column(primary_key=True)
     name : Mapped[str]
     email : Mapped[str]
-    oauth_provider : Mapped[str]
-    oauth_subject: Mapped[str]
-    avatar_url: Mapped[str]
+    oauth_provider : Mapped[Optional[str]]
+    oauth_subject: Mapped[Optional[str]]
+    avatar_url: Mapped[Optional[str]]
     journal_entries : Mapped[List["Journal"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:

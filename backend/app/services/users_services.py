@@ -65,7 +65,7 @@ def get_or_create_user_from_oauth(db: Session, provider: str, subject: str, emai
     if user is not None:
         return user
     
-    existing = user_repository.get_user_by_email(db, email) is not None:
+    existing = user_repository.get_user_by_email(db, email)
     
     if existing is not None:
         return user_repository.link_oauth_identity(db, user_id = existing.id, provider = provider, subject = subject, avatar_url=avatar_url)
