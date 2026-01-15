@@ -1,8 +1,8 @@
 from sqlalchemy import null
-from backend.app.db import models
+from app.db import models
 from pydantic import BaseModel
 from typing import List, Optional
-from backend.app.schemas.journal import JournalRead
+from app.schemas.journal import JournalRead
 
 
 class CreateUser(BaseModel):

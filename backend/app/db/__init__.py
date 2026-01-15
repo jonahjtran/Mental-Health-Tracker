@@ -1,7 +1,7 @@
 """
 Database package initializer.
 
-Having this file allows us to import modules like backend.app.db.models inside
+Having this file allows us to import modules like app.db.models inside
 tests and the application code.
 """
 

@@ -1,3 +1,3 @@
 """
-App package initializer so backend.app.* modules resolve correctly.
+App package initializer so app.* modules resolve correctly.
 """
