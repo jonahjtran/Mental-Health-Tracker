@@ -34,7 +34,7 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
     if not user_id:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
     
-    user = user_repository.get_user_by_id(db, user_id)
+    user = user_repository.get_user_by_id(db, int(user_id))
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     
