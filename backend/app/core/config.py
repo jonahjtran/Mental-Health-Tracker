@@ -12,5 +12,8 @@ class Settings(BaseSettings):
     google_client_secret: str = Field(validation_alias="GOOGLE_CLIENT_SECRET")
     google_redirect_uri: str = Field(validation_alias="GOOGLE_REDIRECT_URI")
     frontend_url: str = Field(validation_alias="FRONTEND_URL")
+    #insights_prompt: str = Field(validation_alias="INSIGHTS_PROMPT")
+    insights_model: str = Field(validation_alias="INSIGHTS_MODEL")
+    insights_api_key: str = Field(validation_alias="INSIGHTS_API_KEY")
 
 settings = Settings()

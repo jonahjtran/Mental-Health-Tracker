@@ -1,10 +1,21 @@
 from backend.app import db
 from backend.app.db.models import JournalInsights
+from backend.app.repositories.insights_repository import get_existing_insights
+from backend.app.repositories.journal_repository import get_journal_entry
+from backend.app.core.config import settings
+from backend.app.ai.prompt import INSIGHTS_PROMPT
+from backend.app.schemas.journal import JournalAnalysisOut
+from backend.app.repositories.insights_repository import save_insights
+from google import genai
+from sqlalchemy.orm import Session
+import json
+from pydantic import ValidationError
 
-def analyze_journal_entry(journal_id: int, user_id: int, force=False):
-    existing_insights = get_existing_insights(journal_id, user_id)
 
-    journal_entry = get_journal_entry(journal_id, user_id)
+def analyze_journal_entry(db: Session,journal_id: int, user_id: int, force=False):
+    existing_insights = get_existing_insights(db, journal_id, user_id)
+
+    journal_entry = get_journal_entry(db, journal_id, user_id)
     if not journal_entry:
         raise ValueError(f"Journal entry does not exist for user {user_id}")
     
@@ -14,13 +25,22 @@ def analyze_journal_entry(journal_id: int, user_id: int, force=False):
     mood_rating = journal_entry.mood_rating
     entry = journal_entry.entry
     date = journal_entry.date
-    
-    next step: feed info to llm
 
-    response = llm.generate_insights(mood_rating, entry, date, prompt -> stored in env variable)
+    client = genai.Client(api_key=settings.insights_api_key)
 
-    insights = parse_insights(response)
+    prompt = INSIGHTS_PROMPT.format(date=date, mood_rating=mood_rating, entry=entry)
 
-    save insights to db
+    response = client.models.generate_content(model=settings.insights_model, contents=prompt)
+
+    insights = parse_insights(response.text)
+
+    save_insights(db, journal_id, user_id, insights)
 
     return insights
+
+def parse_insights(response_text: str) -> JournalAnalysisOut:
+    try:
+        data = json.loads(response_text)
+        return JournalAnalysisOut.model_validate(data)
+    except (json.JSONDecodeError, ValidationError) as exc:
+        raise ValueError("Invalid analysis output") from exc
