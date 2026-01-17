@@ -1,1 +1,23 @@
+from backend.app.core.security import get_current_user
+from backend.app.schemas.journal import JournalAnalysisOut
+from backend.app.services.insights_services import analyze_journal_entry
+from backend.app.db.session import get_db
+from backend.app.core.security import get_current_user
 
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from fastapi import Path
+from backend.app.services.errors import NotFoundError
+
+
+
+
+router = APIRouter(prefix="/api/v1/insights", tags=["insights"])
+
+@router.post("/me/journals/{journal_id}/analyze", response_model=JournalAnalysisOut)
+def analyze_journal_entry_endpoint(db: Session = Depends(get_db), journal_id: int = Path(..., ge=1)):
+    try:
+        return analyze_journal_entry(db, journal_id,Depends(get_current_user))
+    except NotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=exc.message) from exc
