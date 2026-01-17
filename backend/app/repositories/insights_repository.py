@@ -24,3 +24,8 @@ def save_insights(db: Session, journal_id: int, user_id: int, insights: JournalA
     db.commit()
     db.refresh(new_insights)
     return new_insights
+
+def delete_insights(db: Session, journal_id: int, user_id: int):
+    db.query(JournalInsights).filter(JournalInsights.journal_id == journal_id, JournalInsights.user_id == user_id).delete()
+    db.commit()
+    return True

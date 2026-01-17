@@ -44,3 +44,6 @@ def parse_insights(response_text: str) -> JournalAnalysisOut:
         return JournalAnalysisOut.model_validate(data)
     except (json.JSONDecodeError, ValidationError) as exc:
         raise ValueError("Invalid analysis output") from exc
+
+
+
