@@ -8,7 +8,7 @@ def get_existing_insights(db: Session, journal_id: int, user_id: int):
     return db.query(JournalInsights).filter(JournalInsights.journal_id == journal_id, JournalInsights.user_id == user_id).first()
 
 def save_insights(db: Session, journal_id: int, user_id: int, insights: JournalAnalysisOut):
-    insights = JournalInsights(
+    new_insights = JournalInsights(
         journal_id=journal_id,
         user_id=user_id,
         summary=insights.summary,
@@ -20,7 +20,7 @@ def save_insights(db: Session, journal_id: int, user_id: int, insights: JournalA
         model_name=settings.insights_model,
 
     )
-    db.add(insights)
+    db.add(new_insights)
     db.commit()
-    db.refresh(insights)
-    return insights
+    db.refresh(new_insights)
+    return new_insights
