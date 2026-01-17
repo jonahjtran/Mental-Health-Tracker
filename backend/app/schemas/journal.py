@@ -43,3 +43,10 @@ class JournalAnalysisOut(BaseModel):
     class Config:
         extra = "forbid"
 
+class JournalAnalysisUpdate(BaseModel):
+    summary: Optional[str] = None
+    themes: Optional[List[str]] = None
+    sentiment: Optional[Sentiment] = None
+    suggestions: Optional[List[str]] = None
+    risk_flag: Optional[bool] = None
+    risk_reason: Optional[str] = None

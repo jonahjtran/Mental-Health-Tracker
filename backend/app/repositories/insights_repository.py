@@ -1,8 +1,9 @@
 from backend.app.db.models import JournalInsights
 from sqlalchemy.orm import Session
-from backend.app.schemas.journal import JournalAnalysisOut
+from backend.app.schemas.journal import JournalAnalysisOut, JournalAnalysisUpdate
 from backend.app.core.config import settings
 from datetime import datetime
+from backend.app.services.errors import NotFoundError
 
 def get_existing_insights(db: Session, journal_id: int, user_id: int):
     return db.query(JournalInsights).filter(JournalInsights.journal_id == journal_id, JournalInsights.user_id == user_id).first()
@@ -25,7 +26,13 @@ def save_insights(db: Session, journal_id: int, user_id: int, insights: JournalA
     db.refresh(new_insights)
     return new_insights
 
-def delete_insights(db: Session, journal_id: int, user_id: int):
+def delete_insights_repository(db: Session, journal_id: int, user_id: int):
     db.query(JournalInsights).filter(JournalInsights.journal_id == journal_id, JournalInsights.user_id == user_id).delete()
     db.commit()
     return True
+
+def update_insights_repository(db: Session, journal_id: int, user_id: int, insights: JournalAnalysisUpdate):
+    existing_insights = get_existing_insights(db, journal_id, user_id)
+    if not existing_insights:
+        raise NotFoundError("Insights not found")
+    

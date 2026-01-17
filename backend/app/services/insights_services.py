@@ -5,11 +5,13 @@ from backend.app.repositories.journal_repository import get_journal_entry
 from backend.app.core.config import settings
 from backend.app.ai.prompt import INSIGHTS_PROMPT
 from backend.app.schemas.journal import JournalAnalysisOut
-from backend.app.repositories.insights_repository import save_insights
+from backend.app.repositories.insights_repository import save_insights, delete_insights_repository
+from backend.app.services.errors import NotFoundError
 from google import genai
 from sqlalchemy.orm import Session
 import json
 from pydantic import ValidationError
+
 
 
 def analyze_journal_entry(db: Session,journal_id: int, user_id: int, force=False):
@@ -46,4 +48,9 @@ def parse_insights(response_text: str) -> JournalAnalysisOut:
         raise ValueError("Invalid analysis output") from exc
 
 
-
+def delete_insights(db: Session, journal_id: int, user_id: int):
+    existing_insights = get_existing_insights(db, journal_id, user_id)
+    if not existing_insights:
+        raise NotFoundError("Insights not found")
+    delete_insights_repository(db, journal_id, user_id)
+    return existing_insights
