@@ -1,9 +1,7 @@
 from backend.app.core.security import get_current_user
 from backend.app.schemas.journal import JournalAnalysisOut, JournalAnalysisUpdate
-from backend.app.services.insights_services import analyze_journal_entry, delete_insights
 from backend.app.db.session import get_db
 from backend.app.core.security import get_current_user
-from backend.app.services.errors import NotFoundError
 from backend.app.services.errors import NotFoundError
 from backend.app.services.insights_services import delete_insights, update_insights, analyze_journal_entry, get_insights
 
