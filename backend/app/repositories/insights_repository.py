@@ -5,7 +5,7 @@ from backend.app.core.config import settings
 from datetime import datetime
 from backend.app.services.errors import NotFoundError
 
-def get_existing_insights(db: Session, journal_id: int, user_id: int):
+def get_existing_insights_repository(db: Session, journal_id: int, user_id: int):
     return db.query(JournalInsights).filter(JournalInsights.journal_id == journal_id, JournalInsights.user_id == user_id).first()
 
 def save_insights(db: Session, journal_id: int, user_id: int, insights: JournalAnalysisOut):

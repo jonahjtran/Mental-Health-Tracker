@@ -1,6 +1,6 @@
 from backend.app import db
 from backend.app.db.models import JournalInsights
-from backend.app.repositories.insights_repository import get_existing_insights
+from backend.app.repositories.insights_repository import get_existing_insights_repository
 from backend.app.repositories.journal_repository import get_journal_entry
 from backend.app.core.config import settings
 from backend.app.ai.prompt import INSIGHTS_PROMPT
@@ -16,7 +16,7 @@ from pydantic import ValidationError
 
 
 def analyze_journal_entry(db: Session,journal_id: int, user_id: int, force=False):
-    existing_insights = get_existing_insights(db, journal_id, user_id)
+    existing_insights = get_existing_insights_repository(db, journal_id, user_id)
 
     journal_entry = get_journal_entry(db, journal_id, user_id)
     if not journal_entry:
@@ -50,20 +50,20 @@ def parse_insights(response_text: str) -> JournalAnalysisOut:
 
 
 def delete_insights(db: Session, journal_id: int, user_id: int):
-    existing_insights = get_existing_insights(db, journal_id, user_id)
+    existing_insights = get_existing_insights_repository(db, journal_id, user_id)
     if not existing_insights:
         raise NotFoundError("Insights not found")
     delete_insights_repository(db, journal_id, user_id)
     return existing_insights
 
 def update_insights(db: Session, journal_id: int, user_id: int, insights: JournalAnalysisUpdate):
-    existing_insights = get_existing_insights
+    existing_insights = get_existing_insights_repository(db, journal_id, user_id)
     if not existing_insights:
         raise NotFoundError("Existing insights not found")
     update_insights_repository(db, journal_id, user_id, insights)
 
 def get_insights(db: Session, journal_id: int, user_id: int):
-    existing_insights = get_existing_insights(db, journal_id, user_id)
+    existing_insights = get_existing_insights_repository(db, journal_id, user_id)
     if not existing_insights:
         raise NotFoundError("Existing insights not found")
     return existing_insights
