@@ -32,7 +32,9 @@ def delete_insights_repository(db: Session, journal_id: int, user_id: int):
     return True
 
 def update_insights_repository(db: Session, journal_id: int, user_id: int, insights: JournalAnalysisUpdate):
-    existing_insights = get_existing_insights(db, journal_id, user_id)
-    if not existing_insights:
-        raise NotFoundError("Insights not found")
+    existing_insights = insights.model_dump(exclude_unset=True)
+    if existing_insights:
+        db.query(JournalInsights).filter(JournalInsights.journal_id == journal_id, JournalInsights.user_id == user_id)
+    db.commit()
+    return True
     

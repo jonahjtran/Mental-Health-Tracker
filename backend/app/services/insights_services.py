@@ -5,7 +5,7 @@ from backend.app.repositories.journal_repository import get_journal_entry
 from backend.app.core.config import settings
 from backend.app.ai.prompt import INSIGHTS_PROMPT
 from backend.app.schemas.journal import JournalAnalysisOut
-from backend.app.repositories.insights_repository import save_insights, delete_insights_repository
+from backend.app.repositories.insights_repository import save_insights, delete_insights_repository, update_insights_repository
 from backend.app.services.errors import NotFoundError
 from google import genai
 from sqlalchemy.orm import Session
@@ -54,3 +54,9 @@ def delete_insights(db: Session, journal_id: int, user_id: int):
         raise NotFoundError("Insights not found")
     delete_insights_repository(db, journal_id, user_id)
     return existing_insights
+
+def update_insights(db: Session, journal_id: int, user_id: int):
+    existing_insights = get_existing_insights
+    if not existing_insights:
+        raise NotFoundError("Existing insights not found")
+    update_insights_repository(db, journal_id, user_id)
