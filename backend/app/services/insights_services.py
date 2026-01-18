@@ -14,7 +14,7 @@ import json
 from pydantic import ValidationError
 
 
-
+"@TODO: return a JournalAnalysisOut object if it already exists, not jsut when creating new one"
 def analyze_journal_entry(db: Session,journal_id: int, user_id: int, force=False):
     existing_insights = get_existing_insights_repository(db, journal_id, user_id)
 
@@ -56,11 +56,14 @@ def delete_insights(db: Session, journal_id: int, user_id: int):
     delete_insights_repository(db, journal_id, user_id)
     return existing_insights
 
-def update_insights(db: Session, journal_id: int, user_id: int, insights: JournalAnalysisUpdate):
+def update_insights(db: Session, journal_id: int, user_id: int, insights: JournalAnalysisUpdate, force: bool = True):
     existing_insights = get_existing_insights_repository(db, journal_id, user_id)
     if not existing_insights:
         raise NotFoundError("Existing insights not found")
     update_insights_repository(db, journal_id, user_id, insights)
+    
+    updated_insights = get_existing_insights_repository(db, journal_id, user_id)
+    return updated_insights
 
 def get_insights(db: Session, journal_id: int, user_id: int):
     existing_insights = get_existing_insights_repository(db, journal_id, user_id)
