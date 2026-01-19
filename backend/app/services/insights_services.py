@@ -1,13 +1,14 @@
-from backend.app import db
-from backend.app.db.models import JournalInsights
 from backend.app.repositories.insights_repository import get_existing_insights_repository
 from backend.app.repositories.journal_repository import get_journal_entry
 from backend.app.core.config import settings
 from backend.app.ai.prompt import INSIGHTS_PROMPT
 from backend.app.schemas.journal import JournalAnalysisOut
-from backend.app.repositories.insights_repository import save_insights, delete_insights_repository, update_insights_repository
+from backend.app.repositories.insights_repository import (
+    save_insights,
+    delete_insights_repository,
+    update_insights_repository,
+)
 from backend.app.services.errors import NotFoundError
-from backend.app.schemas.journal import JournalAnalysisUpdate
 from google import genai
 from sqlalchemy.orm import Session
 import json
@@ -15,7 +16,7 @@ from pydantic import ValidationError
 
 
 "@TODO: return a JournalAnalysisOut object if it already exists, not jsut when creating new one"
-def analyze_journal_entry(db: Session,journal_id: int, user_id: int, force=False):
+def analyze_journal_entry(db: Session, journal_id: int, user_id: int, force: bool = False):
     existing_insights = get_existing_insights_repository(db, journal_id, user_id)
 
     journal_entry = get_journal_entry(db, journal_id, user_id)
@@ -37,9 +38,17 @@ def analyze_journal_entry(db: Session,journal_id: int, user_id: int, force=False
 
     insights = parse_insights(response.text)
 
-    save_insights(db, journal_id, user_id, insights)
+    if existing_insights:
+        update_insights_repository(
+            db,
+            journal_id,
+            user_id,
+            insights,
+            model_name=settings.insights_model,
+        )
+        return get_existing_insights_repository(db, journal_id, user_id)
 
-    return insights
+    return save_insights(db, journal_id, user_id, insights)
 
 def parse_insights(response_text: str) -> JournalAnalysisOut:
     try:
@@ -56,14 +65,11 @@ def delete_insights(db: Session, journal_id: int, user_id: int):
     delete_insights_repository(db, journal_id, user_id)
     return existing_insights
 
-def update_insights(db: Session, journal_id: int, user_id: int, insights: JournalAnalysisUpdate, force: bool = True):
+def update_insights(db: Session, journal_id: int, user_id: int):
     existing_insights = get_existing_insights_repository(db, journal_id, user_id)
     if not existing_insights:
         raise NotFoundError("Existing insights not found")
-    update_insights_repository(db, journal_id, user_id, insights)
-    
-    updated_insights = get_existing_insights_repository(db, journal_id, user_id)
-    return updated_insights
+    return analyze_journal_entry(db, journal_id, user_id, force=True)
 
 def get_insights(db: Session, journal_id: int, user_id: int):
     existing_insights = get_existing_insights_repository(db, journal_id, user_id)

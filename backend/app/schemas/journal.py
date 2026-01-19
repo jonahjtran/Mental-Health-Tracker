@@ -41,6 +41,7 @@ class JournalAnalysisOut(BaseModel):
     risk_reason: Optional[str]
 
     class Config:
+        from_attributes = True
         extra = "forbid"
 
 class JournalAnalysisUpdate(BaseModel):

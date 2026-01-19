@@ -6,6 +6,7 @@ from backend.app.services.errors import NotFoundError
 from backend.app.services.insights_services import delete_insights, update_insights, analyze_journal_entry, get_insights
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Optional
 from sqlalchemy.orm import Session
 from fastapi import Path, Response
 
@@ -32,16 +33,22 @@ def get_journal_insights_endpoint(db: Session = Depends(get_db), journal_id: int
 @router.delete("/me/journals/{journal_id}/insights", status_code=status.HTTP_204_NO_CONTENT)
 def delete_journal_insights_endpoint(db: Session = Depends(get_db), journal_id: int = Path(..., ge=1), current_user = Depends(get_current_user)):
     try: 
-        return delete_insights(db, journal_id, current_user.id)
+        delete_insights(db, journal_id, current_user.id)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
     except NotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=exc.message) from exc
     except Exception as exc:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
 
 @router.put("/me/journals/{journal_id}/insights", response_model=JournalAnalysisOut)
-def update_journal_insights_endpoint(db: Session = Depends(get_db), journal_id: int = Path(..., ge=1), insights: JournalAnalysisUpdate = ..., current_user = Depends(get_current_user), force: bool = True):
+def update_journal_insights_endpoint(
+    db: Session = Depends(get_db),
+    journal_id: int = Path(..., ge=1),
+    insights: Optional[JournalAnalysisUpdate] = None,
+    current_user = Depends(get_current_user),
+):
     try:
-        return update_insights(db, journal_id, current_user.id, insights)
+        return update_insights(db, journal_id, current_user.id)
     except NotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=exc.message) from exc
     except Exception as exc:

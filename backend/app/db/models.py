@@ -17,6 +17,7 @@ class Users(Base):
     oauth_subject: Mapped[Optional[str]]
     avatar_url: Mapped[Optional[str]]
     journal_entries : Mapped[List["Journal"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    insights : Mapped[List["JournalInsights"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, name={self.name!r}, email={self.email!r})"
@@ -32,6 +33,7 @@ class Journal(Base):
     entry : Mapped[str]
 
     user : Mapped["Users"] = relationship(back_populates="journal_entries")
+    insights : Mapped["JournalInsights"] = relationship(back_populates="journal", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"Journal(id={self.id!r}, user_id={self.user_id!r}, date={self.date!r}), mood_rating={self.mood_rating!r}, entry={self.entry!r})"
