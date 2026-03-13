@@ -27,7 +27,7 @@ def delete_journal_entry(db: Session, user_id: int, journal_id: int):
     if journal is None or journal.user_id != user_id:
         raise NotFoundError("Journal not found.")
 
-    journal_read = JournalRead.from_orm(journal)
+    journal_read = JournalRead.model_validate(journal)
     repo_delete_journal(db, journal_id)
     return journal_read
 

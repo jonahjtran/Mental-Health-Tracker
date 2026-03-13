@@ -47,12 +47,11 @@ def test_journal_create_requires_mood_rating() -> None:
         JournalCreate(entry="Missing rating.")
 
 
-def test_create_user_accepts_empty_journal_entries() -> None:
-    payload = CreateUser(name="Alex", email="alex@example.com", journal_entries=[])
+def test_create_user_accepts_name_and_email_only() -> None:
+    payload = CreateUser(name="Alex", email="alex@example.com")
 
     assert payload.name == "Alex"
     assert payload.email == "alex@example.com"
-    assert payload.journal_entries == []
 
 
 def test_user_read_accepts_nested_journal_entries() -> None:

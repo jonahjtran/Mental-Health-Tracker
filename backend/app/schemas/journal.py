@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import date as dt_date
 from pydantic import Field
 from typing import Optional, List
@@ -9,40 +9,35 @@ class JournalCreate(BaseModel):
     entry: str
 
 class JournalRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     date: dt_date
     mood_rating: int = Field(..., ge=1, le=5)
     entry: str
 
-    class Config:
-        from_attributes = True
-
 class JournalUpdate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     date: Optional[dt_date] = None
     mood_rating: Optional[int] = Field(None, ge=1, le=5)
     entry: Optional[str] = None
 
-    class Config:
-        from_attributes = True
-
 class Sentiment(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     label: str
     score: float = Field(..., ge=0, le=1)
 
-    class Config:
-        extra = "forbid"
-
 class JournalAnalysisOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True, extra="forbid")
+
     summary: str
     themes: List[str]
     sentiment: Sentiment
     suggestions: List[str]
     risk_flag: bool
     risk_reason: Optional[str]
-
-    class Config:
-        from_attributes = True
-        extra = "forbid"
 
 class JournalAnalysisUpdate(BaseModel):
     summary: Optional[str] = None

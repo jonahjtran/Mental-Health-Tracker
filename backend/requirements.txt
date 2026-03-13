@@ -4,6 +4,8 @@ httpx
 sqlalchemy
 fastapi
 uvicorn
+pydantic-settings
+google-genai
 pytest
 pytest-cov
 pytest-mock

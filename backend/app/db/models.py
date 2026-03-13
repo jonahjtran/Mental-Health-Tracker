@@ -12,10 +12,10 @@ class Users(Base):
 
     id : Mapped[int] = mapped_column(primary_key=True)
     name : Mapped[str]
-    email : Mapped[str]
+    email : Mapped[str] = mapped_column(unique=True, index=True)
     oauth_provider : Mapped[Optional[str]]
-    oauth_subject: Mapped[Optional[str]]
-    avatar_url: Mapped[Optional[str]]
+    oauth_subject: Mapped[Optional[str]] = mapped_column(unique=True, index=True)
+    avatar_url: Mapped[Optional[str]] = mapped_column(nullable=True)
     journal_entries : Mapped[List["Journal"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     insights : Mapped[List["JournalInsights"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 

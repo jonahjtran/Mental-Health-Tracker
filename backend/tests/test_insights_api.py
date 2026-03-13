@@ -80,6 +80,7 @@ sys.modules["google"] = google_module
 sys.modules["google.genai"] = genai_module
 
 from backend.app.api.v1 import insights as insights_router
+from backend.app.core.config import settings
 from backend.app.core.security import get_current_user
 from backend.app.db import models
 from backend.app.db.base import Base
@@ -122,7 +123,7 @@ def db_session(db_sessionmaker) -> Session:
 @pytest.fixture()
 def client(db_sessionmaker):
     app = FastAPI()
-    app.include_router(insights_router.router)
+    app.include_router(insights_router.router, prefix="/api/v1")
 
     def _get_db():
         db = db_sessionmaker()
@@ -211,7 +212,7 @@ def test_update_insights_endpoint_reanalyzes(client: TestClient, db_session: Ses
         select(models.JournalInsights).where(models.JournalInsights.journal_id == journal.id)
     ).scalar_one()
     assert stored.summary == "Refreshed summary."
-    assert stored.model_name == "test-model"
+    assert stored.model_name == settings.insights_model
 
 
 def test_delete_insights_endpoint_deletes(client: TestClient, db_session: Session) -> None:

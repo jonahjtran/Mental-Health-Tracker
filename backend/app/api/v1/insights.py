@@ -12,7 +12,7 @@ from fastapi import Path, Response
 
 
 
-router = APIRouter(prefix="/api/v1/insights", tags=["insights"])
+router = APIRouter(prefix="/insights", tags=["insights"])
 
 @router.post("/me/journals/{journal_id}/analyze", response_model=JournalAnalysisOut)
 def analyze_journal_entry_endpoint(db: Session = Depends(get_db), journal_id: int = Path(..., ge=1), current_user = Depends(get_current_user), force: bool = False):

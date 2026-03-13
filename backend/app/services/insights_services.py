@@ -9,7 +9,6 @@ from backend.app.repositories.insights_repository import (
     update_insights_repository,
 )
 from backend.app.services.errors import NotFoundError
-from google import genai
 from sqlalchemy.orm import Session
 import json
 from pydantic import ValidationError
@@ -22,7 +21,12 @@ def analyze_journal_entry(db: Session, journal_id: int, user_id: int, force: boo
     journal_entry = get_journal_entry(db, journal_id, user_id)
     if not journal_entry:
         raise ValueError(f"Journal entry does not exist for user {user_id}")
-    
+
+    if not settings.insights_api_key or not settings.insights_model:
+        raise ValueError("Insights API is not configured")
+
+    from google import genai
+
     if existing_insights and not force:
         return existing_insights
      

@@ -1,49 +1,39 @@
-from sqlalchemy import null
-from backend.app.db import models
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 from typing import List, Optional
 from backend.app.schemas.journal import JournalRead
 
 
 class CreateUser(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     name: str
     email: str
-    journal_entries: List[JournalRead]
-
-    class Config:
-        from_attributes = True
 
 class UserRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
     email: str
-    journal_entries: List[JournalRead]
-
-    class Config:
-        from_attributes = True
+    journal_entries: List[JournalRead] = Field(default_factory=list)
 
 class UserUpdate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     name: Optional[str] = None
     email: Optional[str] = None
-    journal_entries: Optional[List[JournalRead]] = None
-
-    class Config:
-        from_attributes = True
 
 class UserDelete(BaseModel):
-    id: int
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        from_attributes = True
+    id: int
 
 class GetUserByEmail(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     email: str
 
-    class Config:
-        from_attributes = True
-
 class GetUserById(BaseModel):
-    id: int
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        from_attributes = True
+    id: int

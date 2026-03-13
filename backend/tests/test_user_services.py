@@ -31,7 +31,6 @@ class UserPayload:
     ) -> None:
         self.name = name
         self.email = email
-        self.journal_entries = []
 
 
 @pytest.fixture()
@@ -50,7 +49,7 @@ def db_session() -> Session:
 
 
 def _create_user(db_session: Session, name: str, email: str) -> models.Users:
-    payload = CreateUser(name=name, email=email, journal_entries=[])
+    payload = CreateUser(name=name, email=email)
     return users_services.create_user(db_session, payload)
 
 
@@ -64,7 +63,7 @@ def test_create_user_rejects_missing_fields(db_session: Session) -> None:
 def test_create_user_rejects_duplicate_email(db_session: Session) -> None:
     _create_user(db_session, "Jane", "jane@example.com")
 
-    duplicate = CreateUser(name="Jane Two", email="jane@example.com", journal_entries=[])
+    duplicate = CreateUser(name="Jane Two", email="jane@example.com")
     with pytest.raises(ConflictError):
         users_services.create_user(db_session, duplicate)
 

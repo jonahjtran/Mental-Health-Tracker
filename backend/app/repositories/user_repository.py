@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-from app import db
 from backend.app.db.models import Users, Journal
 from backend.app.schemas.users import CreateUser, UserRead, UserUpdate, UserDelete
 from backend.app.schemas.journal import JournalRead
@@ -9,7 +8,6 @@ def create_user(db: Session, user_data: CreateUser):
     user = Users(
         name = user_data.name,
         email = user_data.email,
-        journal_entries = user_data.journal_entries
     )
 
     db.add(user)
@@ -29,10 +27,10 @@ def get_user_by_id(db: Session, user_id: int):
     return db.query(Users).filter(Users.id == user_id).first()
 
 def update_user(db: Session, user_id: int, user_data: UserUpdate):
-    print("inside update user function")
-    db.query(Users).filter(Users.id == user_id).update(user_data.model_dump(exclude={"journal_entries"}))
+    update_data = user_data.model_dump(exclude_unset=True)
+    if update_data:
+        db.query(Users).filter(Users.id == user_id).update(update_data)
     db.commit()
-    print("committed update user function")
     return True
 
 def delete_user(db: Session, user_id: int):
