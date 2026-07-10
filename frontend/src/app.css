@@ -1,0 +1,384 @@
+.centered-page {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.card {
+  background: var(--bg);
+  border: none;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+
+.login-card {
+  text-align: center;
+  max-width: 360px;
+}
+
+.login-card p {
+  margin: 12px 0 20px;
+}
+
+.btn {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  background: var(--bg);
+  color: var(--text-h);
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-primary {
+  background: linear-gradient(87deg, var(--accent) 0, var(--accent-2) 100%);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.btn-secondary {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.btn-ghost {
+  background: transparent;
+}
+
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 24px;
+  border-bottom: none;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.navbar-links {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+}
+
+.navbar-links a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 8px;
+}
+
+.navbar-links a.active {
+  color: var(--accent);
+  background: var(--accent-bg);
+  border-bottom: none;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.main-content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.error-text {
+  color: var(--danger);
+  font-size: 14px;
+}
+
+.journal-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  margin-bottom: 12px;
+  flex: 1;
+}
+
+.journal-form input,
+.journal-form textarea {
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-alt);
+  color: var(--text-h);
+  resize: vertical;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.journal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.journal-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.journal-card-header > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mood-badge {
+  font-size: 13px;
+  background: var(--bg-alt);
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+
+.expand-icon {
+  font-size: 20px;
+  color: var(--text);
+}
+
+.journal-preview {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.journal-entry-full {
+  margin-top: 12px;
+  white-space: pre-wrap;
+  font-size: 14px;
+  color: var(--text-h);
+}
+
+.journal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.insights-panel {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+}
+
+.insights-risk {
+  border-top-color: var(--danger);
+}
+
+.risk-banner {
+  background: rgba(229, 72, 77, 0.1);
+  color: var(--danger);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.insights-summary {
+  font-size: 14px;
+  color: var(--text-h);
+  margin-bottom: 10px;
+}
+
+.insights-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.sentiment-badge,
+.theme-chip {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.suggestions-list {
+  margin: 0 0 10px;
+  padding-left: 18px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.insights-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  text-align: left;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card:nth-child(1) {
+  background: linear-gradient(87deg, #5e72e4 0, #825ee4 100%);
+}
+
+.stat-card:nth-child(2) {
+  background: linear-gradient(87deg, #11cdef 0, #1171ef 100%);
+}
+
+.stat-card:nth-child(3) {
+  background: linear-gradient(87deg, #2dce89 0, #2dcecc 100%);
+}
+
+.stat-card:nth-child(4) {
+  background: linear-gradient(87deg, #fb6340 0, #fbb140 100%);
+}
+
+.stat-value {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.stat-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.bar-label {
+  width: 12px;
+}
+
+.bar-track {
+  flex: 1;
+  height: 10px;
+  background: var(--bg-alt);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: var(--accent);
+}
+
+.bar-count {
+  width: 24px;
+  text-align: right;
+}
+
+.mood-line-chart {
+  display: block;
+  margin-top: 8px;
+  overflow: visible;
+}
+
+.mood-line-gridline {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.mood-line-stroke {
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mood-line-dot {
+  fill: var(--bg);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.risk-list ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+}
+
+@media (max-width: 640px) {
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .form-row {
+    flex-direction: column;
+  }
+}

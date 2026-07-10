@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from backend.app.api.v1 import analytics, auth, health, insights, journals, users
@@ -10,6 +11,14 @@ app = FastAPI()
 app.add_middleware(
     SessionMiddleware,
     secret_key=settings.jwt_secret,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[settings.frontend_url],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(health.router, prefix="/api/v1")

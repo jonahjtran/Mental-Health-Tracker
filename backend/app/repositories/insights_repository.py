@@ -21,7 +21,7 @@ def save_insights(db: Session, journal_id: int, user_id: int, insights: JournalA
         user_id=user_id,
         summary=insights.summary,
         themes=insights.themes,
-        sentiment=insights.sentiment,
+        sentiment=insights.sentiment.model_dump(),
         suggestions=insights.suggestions,
         risk_flag=insights.risk_flag,
         risk_reason=insights.risk_reason,

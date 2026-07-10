@@ -30,8 +30,8 @@ async def login_with_google(request: Request):
 async def google_callback(request: Request, db: Session = Depends(get_db)):
     try:
         token = await oauth.google.authorize_access_token(request)
-        userinfo = await oauth.google.parse_id_token(request, token)
-    except OAuthError as e: 
+        userinfo = token.get("userinfo")
+    except OAuthError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Google OAuth error: {e}") from e
 
     if not userinfo:
