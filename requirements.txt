@@ -1,0 +1,9 @@
+authlib
+pyjwt
+httpx
+sqlalchemy
+fastapi
+uvicorn
+pydantic-settings
+google-genai
+psycopg2-binary
