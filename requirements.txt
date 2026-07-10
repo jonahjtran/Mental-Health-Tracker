@@ -7,3 +7,4 @@ uvicorn
 pydantic-settings
 google-genai
 psycopg2-binary
+itsdangerous

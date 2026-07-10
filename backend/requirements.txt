@@ -6,6 +6,7 @@ fastapi
 uvicorn
 pydantic-settings
 google-genai
+itsdangerous
 pytest
 pytest-cov
 pytest-mock
