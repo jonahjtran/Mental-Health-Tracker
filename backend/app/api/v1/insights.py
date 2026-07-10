@@ -1,12 +1,13 @@
 from backend.app.core.security import get_current_user
 from backend.app.schemas.journal import JournalAnalysisOut, JournalAnalysisUpdate
+from backend.app.schemas.analytics import RiskFlagOut
 from backend.app.db.session import get_db
 from backend.app.core.security import get_current_user
 from backend.app.services.errors import NotFoundError
-from backend.app.services.insights_services import delete_insights, update_insights, analyze_journal_entry, get_insights
+from backend.app.services.insights_services import delete_insights, update_insights, analyze_journal_entry, get_insights, get_risk_flags
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from typing import Optional
+from typing import List, Optional
 from sqlalchemy.orm import Session
 from fastapi import Path, Response
 
@@ -14,10 +15,18 @@ from fastapi import Path, Response
 
 router = APIRouter(prefix="/insights", tags=["insights"])
 
+@router.get("/me/risk-flags", response_model=List[RiskFlagOut])
+def get_risk_flags_endpoint(db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    flagged = get_risk_flags(db, current_user.id)
+    return [
+        RiskFlagOut(journal_id=insight.journal_id, date=insight.journal.date, risk_reason=insight.risk_reason)
+        for insight in flagged
+    ]
+
 @router.post("/me/journals/{journal_id}/analyze", response_model=JournalAnalysisOut)
 def analyze_journal_entry_endpoint(db: Session = Depends(get_db), journal_id: int = Path(..., ge=1), current_user = Depends(get_current_user), force: bool = False):
     try:
-        return analyze_journal_entry(db, journal_id, current_user.id)
+        return analyze_journal_entry(db, journal_id, current_user.id, force=force)
     except NotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=exc.message) from exc
     except Exception as exc:

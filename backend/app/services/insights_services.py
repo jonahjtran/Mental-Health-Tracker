@@ -1,4 +1,4 @@
-from backend.app.repositories.insights_repository import get_existing_insights_repository
+from backend.app.repositories.insights_repository import get_existing_insights_repository, get_flagged_insights
 from backend.app.repositories.journal_repository import get_journal_entry
 from backend.app.core.config import settings
 from backend.app.ai.prompt import INSIGHTS_PROMPT
@@ -14,7 +14,6 @@ import json
 from pydantic import ValidationError
 
 
-"@TODO: return a JournalAnalysisOut object if it already exists, not jsut when creating new one"
 def analyze_journal_entry(db: Session, journal_id: int, user_id: int, force: bool = False):
     existing_insights = get_existing_insights_repository(db, journal_id, user_id)
 
@@ -80,3 +79,6 @@ def get_insights(db: Session, journal_id: int, user_id: int):
     if not existing_insights:
         raise NotFoundError("Existing insights not found")
     return existing_insights
+
+def get_risk_flags(db: Session, user_id: int):
+    return get_flagged_insights(db, user_id)

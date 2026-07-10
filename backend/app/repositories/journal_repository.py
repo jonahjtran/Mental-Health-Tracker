@@ -47,3 +47,15 @@ def get_journals_by_mood_rating_and_date(db: Session, user_id: int, mood_rating:
 
 def get_journal_entry(db: Session, journal_id: int, user_id: int):
     return db.query(Journal).filter(Journal.id == journal_id, Journal.user_id == user_id).first()
+
+def get_journals_in_range(db: Session, user_id: int, start_date: date, end_date: date):
+    return (
+        db.query(Journal)
+        .filter(
+            Journal.user_id == user_id,
+            Journal.date >= start_date,
+            Journal.date <= end_date,
+        )
+        .order_by(Journal.date)
+        .all()
+    )

@@ -215,6 +215,90 @@ def test_update_insights_endpoint_reanalyzes(client: TestClient, db_session: Ses
     assert stored.model_name == settings.insights_model
 
 
+def test_analyze_endpoint_returns_existing_without_reanalyzing(client: TestClient, db_session: Session) -> None:
+    user = _create_user(db_session, "Reo", "reo@example.com")
+    journal = _create_journal(db_session, user.id, entry="Entry.", mood_rating=3)
+    _create_insights(db_session, journal.id, user.id)
+    CURRENT_USER["user"] = user
+
+    response = client.post(f"/api/v1/insights/me/journals/{journal.id}/analyze")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["summary"] == "Initial summary."
+
+
+def test_analyze_endpoint_force_reanalyzes(client: TestClient, db_session: Session) -> None:
+    user = _create_user(db_session, "Sia", "sia@example.com")
+    journal = _create_journal(db_session, user.id, entry="Entry.", mood_rating=3)
+    _create_insights(db_session, journal.id, user.id)
+    CURRENT_USER["user"] = user
+
+    response = client.post(f"/api/v1/insights/me/journals/{journal.id}/analyze", params={"force": True})
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["summary"] == "Refreshed summary."
+
+
+def test_risk_flags_endpoint_returns_only_flagged_entries(client: TestClient, db_session: Session) -> None:
+    user = _create_user(db_session, "Tia", "tia@example.com")
+    other_user = _create_user(db_session, "Uri", "uri@example.com")
+
+    flagged_journal = _create_journal(db_session, user.id, entry="Struggling.", mood_rating=1)
+    calm_journal = _create_journal(db_session, user.id, entry="Fine.", mood_rating=4)
+    other_flagged_journal = _create_journal(db_session, other_user.id, entry="Other.", mood_rating=1)
+
+    insights = models.JournalInsights(
+        journal_id=flagged_journal.id,
+        user_id=user.id,
+        summary="Concerning entry.",
+        themes=["distress"],
+        sentiment={"label": "negative", "score": 0.1},
+        suggestions=["Reach out to support."],
+        risk_flag=True,
+        risk_reason="Mentioned feeling hopeless.",
+        model_name="seed-model",
+    )
+    db_session.add(insights)
+    db_session.add(
+        models.JournalInsights(
+            journal_id=calm_journal.id,
+            user_id=user.id,
+            summary="Fine entry.",
+            themes=[],
+            sentiment={"label": "positive", "score": 0.8},
+            suggestions=[],
+            risk_flag=False,
+            risk_reason=None,
+            model_name="seed-model",
+        )
+    )
+    db_session.add(
+        models.JournalInsights(
+            journal_id=other_flagged_journal.id,
+            user_id=other_user.id,
+            summary="Other user's concerning entry.",
+            themes=["distress"],
+            sentiment={"label": "negative", "score": 0.1},
+            suggestions=[],
+            risk_flag=True,
+            risk_reason="Other user reason.",
+            model_name="seed-model",
+        )
+    )
+    db_session.commit()
+    CURRENT_USER["user"] = user
+
+    response = client.get("/api/v1/insights/me/risk-flags")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert len(body) == 1
+    assert body[0]["journal_id"] == flagged_journal.id
+    assert body[0]["risk_reason"] == "Mentioned feeling hopeless."
+
+
 def test_delete_insights_endpoint_deletes(client: TestClient, db_session: Session) -> None:
     user = _create_user(db_session, "Pia", "pia@example.com")
     journal = _create_journal(db_session, user.id, entry="Entry.", mood_rating=2)

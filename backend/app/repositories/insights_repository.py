@@ -7,6 +7,14 @@ from typing import Optional, Union
 def get_existing_insights_repository(db: Session, journal_id: int, user_id: int):
     return db.query(JournalInsights).filter(JournalInsights.journal_id == journal_id, JournalInsights.user_id == user_id).first()
 
+def get_flagged_insights(db: Session, user_id: int):
+    return (
+        db.query(JournalInsights)
+        .filter(JournalInsights.user_id == user_id, JournalInsights.risk_flag == True)  # noqa: E712
+        .order_by(JournalInsights.created_at.desc())
+        .all()
+    )
+
 def save_insights(db: Session, journal_id: int, user_id: int, insights: JournalAnalysisOut):
     new_insights = JournalInsights(
         journal_id=journal_id,

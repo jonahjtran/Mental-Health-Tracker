@@ -24,6 +24,7 @@ from backend.app.repositories.journal_repository import (
     get_journals_by_mood_rating,
     get_journals_by_mood_rating_and_date,
     get_journals_by_user,
+    get_journals_in_range,
     update_journal,
 )
 from backend.app.schemas.journal import JournalCreate, JournalUpdate
@@ -128,6 +129,36 @@ def test_update_journal_persists_changes(db_session: Session) -> None:
     assert updated is not None
     assert updated.mood_rating == 4
     assert updated.entry == "Improved."
+
+
+def test_get_journals_in_range_filters_by_user_and_dates(db_session: Session) -> None:
+    user = _create_user(db_session, "Ivy", "ivy@example.com")
+    other_user = _create_user(db_session, "Jon", "jon@example.com")
+
+    create_journal(
+        db_session,
+        user.id,
+        JournalCreate(date=date(2024, 4, 1), mood_rating=3, entry="In range start."),
+    )
+    create_journal(
+        db_session,
+        user.id,
+        JournalCreate(date=date(2024, 4, 10), mood_rating=4, entry="In range end."),
+    )
+    create_journal(
+        db_session,
+        user.id,
+        JournalCreate(date=date(2024, 4, 20), mood_rating=5, entry="Out of range."),
+    )
+    create_journal(
+        db_session,
+        other_user.id,
+        JournalCreate(date=date(2024, 4, 5), mood_rating=2, entry="Different user."),
+    )
+
+    result = get_journals_in_range(db_session, user.id, date(2024, 4, 1), date(2024, 4, 10))
+
+    assert [j.entry for j in result] == ["In range start.", "In range end."]
 
 
 def test_delete_journal_removes_entry(db_session: Session) -> None:

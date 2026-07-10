@@ -46,3 +46,4 @@ class JournalAnalysisUpdate(BaseModel):
     suggestions: Optional[List[str]] = None
     risk_flag: Optional[bool] = None
     risk_reason: Optional[str] = None
+
